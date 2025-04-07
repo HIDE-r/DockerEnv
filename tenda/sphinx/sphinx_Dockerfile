@@ -1,0 +1,50 @@
+FROM ubuntu:24.04
+LABEL author="liaokangning <liaokangning@tenda.cn>"
+LABEL describe="use for build sphinx docs"
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 修改apt下载源
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources; \
+	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources;
+
+RUN apt-get update && apt-get install ca-certificates --reinstall -y
+
+# 使用 HTTPS 可以有效避免国内运营商的缓存劫持
+RUN sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
+
+# 安装相关软件
+RUN apt-get update && apt-get install -y \
+	python3 \
+	python3-pip \
+	python3-venv \
+	openjdk-21-jre \
+	ttf-wqy-microhei
+
+# 网络调试工具
+RUN apt-get install -y \
+	iputils-ping \
+	iproute2 \
+	bind9 \
+	wget \
+	curl
+
+# 激活 python venv 环境, 换pip下载源, 并安装 sphinx 依赖
+RUN mkdir -p /venv/sphinx_docs && cd /venv/sphinx_docs && echo "Sphinx" > requirements.txt &&\
+	echo "furo" >> requirements.txt &&\
+	echo "sphinx_design" >> requirements.txt &&\
+	echo "myst_parser" >> requirements.txt &&\
+	echo "jieba" >> requirements.txt &&\
+	echo "sphinxcontrib-mermaid" >> requirements.txt &&\
+	echo "sphinxcontrib-httpdomain" >> requirements.txt &&\
+	echo "sphinxcontrib.plantuml" >> requirements.txt &&\
+	echo "sphinx-needs" >> requirements.txt \
+	&& python3 -m venv . && \
+	. /venv/sphinx_docs/bin/activate && \
+	pip install -i https://mirrors.ustc.edu.cn/pypi/simple pip -U && \
+	pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/simple && \
+	pip install -r requirements.txt
+
+WORKDIR /root

@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  sphinx_web:
+    image: tenda_sphinx
+    ports:
+      - "8000:8000"
+    build:
+      context: ./
+      dockerfile: ./Dockerfile_sphinx
+    command: python -m http.server -d ./build/html
+

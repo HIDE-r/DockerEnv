@@ -1,0 +1,6 @@
+services:
+  pppoev6:
+    image: test_env_ipv6
+    build: .
+    network_mode: "host"
+    command: pppoe-server -F -I eth1 -L 10.1.1.1 -R 10.1.1.2 -N 20
