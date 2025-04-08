@@ -3,4 +3,6 @@ services:
     image: test_env_ipv6
     build: .
     network_mode: "host"
-    command: pppoe-server -F -I eth1 -L 10.1.1.1 -R 10.1.1.2 -N 20
+    # -F 前台运行
+    # -N 最大并行session数量
+    command: pppoe-server -F -I ${IFACE} -L ${LOCAL_IP} -R ${POOL_START_IP} -N 20
