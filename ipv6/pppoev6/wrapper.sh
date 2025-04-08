@@ -33,7 +33,7 @@ docker_compose_up() {
 	local detach="$2"
 
 	if [ "${privilege}" == "1" ]; then
-		preface="sudo"
+		preface="sudo "
 	fi
 
 	# 当 docker compose 使用 sudo 调用 root 用户执行时, 当前的环境变量不起作用, 故这里使用变量替换的方式解决
