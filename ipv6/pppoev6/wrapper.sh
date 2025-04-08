@@ -7,21 +7,27 @@ prt() {
 }
 
 usage() {
-    echo "usage: $(basename "$0") [-ilpd]"
+    echo "usage: $(basename "$0") [-ilpds]"
     echo "  options:"
     printf "  %-20s %s\n" "-i, --iface"         "The bind interface"
     printf "  %-20s %s\n" "-l, --local_ip"      "Local PPPoE interface IP"
     printf "  %-20s %s\n" "-p, --pool_start_ip" "Start address of remote IP pool"
     printf "  %-20s %s\n" "-d, --detach" 	"run docker compose in detach mode"
+    printf "  %-20s %s\n" "-s, --super_user" 	"run docker compose in privilege"
 }
 
 docker_compose_up() {
-	local detach="$1"
+	local privilege="$1"
+	local detach="$2"
+
+	if [ "${privilege}" == "1" ]; then
+		preface="sudo"
+	fi
 
 	if [ "$detach" == "1" ]; then
-		docker compose up -d
+		${preface} docker compose up -d
 	else 
-		docker compose up
+		${preface} docker compose up
 	fi
 }
 
@@ -31,7 +37,7 @@ main() {
 		exit 0
 	fi
 
-	if ! OPTS=$(getopt -o 'hi:l:p:d' --long help,iface:local_ip:pool_start_ip:detach -n 'parse-options' -- "$@"); then
+	if ! OPTS=$(getopt -o 'hi:l:p:ds' --long help,iface:local_ip:pool_start_ip:detach,super_user -n 'parse-options' -- "$@"); then
 		err "Failed parsing options." >&2
 		usage
 		exit 1
@@ -46,6 +52,7 @@ main() {
 			-l | --local_ip)	export LOCAL_IP="$2"; shift ; shift ;;
 			-p | --pool_start_ip)	export POOL_START_IP="$2"; shift ; shift ;;
 			-d | --detach)		detach=1; shift;;
+			-s | --super_user)	privilege=1; shift;;
 			-- ) shift; break ;;
 			* ) err "unsupported argument $1"; usage; exit 1 ;;
 		esac
@@ -58,7 +65,7 @@ main() {
 
 	echo -e "======================================================================\n"
 
-	docker_compose_up ${detach}
+	docker_compose_up "${privilege}" "${detach}"
 }
 
 main "$@"
