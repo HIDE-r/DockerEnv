@@ -1,6 +1,8 @@
+name: pppoev6
+
 services:
-  pppoev6:
-    image: test_env_ipv6
+  pppoe:
+    image: scenario_env_ipv6
     build: .
     network_mode: "host"
     volumes:
@@ -10,3 +12,11 @@ services:
     # -N 最大并行session数量
     privileged: true
     command: pppoe-server -F -I ${IFACE} -L ${LOCAL_IP} -R ${POOL_START_IP} -N 20
+
+  radvd:
+    image: scenario_env_ipv6
+    build: .
+    network_mode: "host"
+    volumes:
+      - ./conf/radvd.conf:/etc/radvd.conf
+    command: radvd
