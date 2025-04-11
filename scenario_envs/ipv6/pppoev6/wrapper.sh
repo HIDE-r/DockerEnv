@@ -26,6 +26,9 @@ usage() {
     printf "  %-20s %s\n" "-d, --detach" 	"run docker compose in detach mode"
     printf "  %-20s %s\n" "-s, --super_user" 	"run docker compose in privilege"
     printf "  %-20s %s\n" "-v, --verbose" 	"verbose message"
+    echo ""
+    echo "example:"
+    echo "  ./wrapper.sh -s -i enp1s0 -l 10.1.1.1 -p 10.1.1.2"
 }
 
 docker_compose_up() {
