@@ -1,0 +1,12 @@
+services:
+  pppoev4:
+    image: scenario_envs/pppoev4
+    build: .
+    network_mode: "host"
+    volumes:
+      - ./conf/pppd_option.conf:/etc/ppp/pppoe-server-options
+      - ./conf/pap-secrets:/etc/ppp/pap-secrets
+    # -F 前台运行
+    # -N 最大并行session数量
+    privileged: true
+    command: pppoe-server -F -I ${IFACE} -L ${LOCAL_IP} -R ${POOL_START_IP} -N 20
