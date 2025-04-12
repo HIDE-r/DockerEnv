@@ -21,7 +21,8 @@ RUN sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
 RUN apt-get update && apt-get install -y \
 	pppoe \
 	radvd \
-	wide-dhcpv6-server \
+	isc-dhcp-server \
+	m4 \
 	vim \
 	iproute2 \
 	iputils-ping

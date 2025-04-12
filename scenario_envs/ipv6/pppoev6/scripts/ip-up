@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+PPP_IFACE="$1"
+PPP_INDEX=$(echo "${PPP_IFACE}" | sed 's/[^0-9]*//g')
+RADVD_CONF="/etc/radvd-${PPP_IFACE}.conf"
+
+# radvd
+m4 -D"__IFACE__=${PPP_IFACE}" /etc/radvd.m4 > ${RADVD_CONF}
+
+radvd -C ${RADVD_CONF}
+
+# dhcpd6
+ip addr add 2024::${PPP_INDEX}/64 dev ${PPP_IFACE}
+dhcpd -6 -cf /etc/dhcp/dhcpd6.conf ${PPP_IFACE}
