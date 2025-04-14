@@ -11,6 +11,7 @@ services:
       - ./conf/radvd.conf:/etc/radvd.m4
       - ./conf/dhcpd6.conf:/etc/dhcp/dhcpd6.conf
       - ./scripts/ip-up:/etc/ppp/ip-up.d/0001pppoev6
+      - ./scripts/ip-down:/etc/ppp/ip-down.d/0001pppoev6
       - ./env_data/:/var/env_data
     # Note: 需要权限用于生成 /dev/ppp
     privileged: true
