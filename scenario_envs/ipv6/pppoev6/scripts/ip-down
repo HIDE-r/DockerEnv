@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+pkill -f "radvd.*${PPP_IFACE}"
+pkill -f "dhcpd.*${PPP_IFACE}"
