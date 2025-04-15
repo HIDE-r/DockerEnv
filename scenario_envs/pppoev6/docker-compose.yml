@@ -2,7 +2,7 @@ name: pppoev6
 
 services:
   pppoev6:
-    image: scenario_env_ipv6
+    image: scenario_envs/ipv6
     build: .
     network_mode: "host"
     volumes:

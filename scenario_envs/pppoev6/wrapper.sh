@@ -90,4 +90,5 @@ main() {
 	docker_compose_up "${privilege}" "${detach}"
 }
 
+rm -rf ./env_data/*
 main "$@"
