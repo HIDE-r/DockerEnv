@@ -51,6 +51,7 @@ docker_compose_up() {
 	fi
 }
 
+# ./wrapper.sh -i eth0 -l 10.1.1.1 -p 10.1.1.2 -v
 main() {
 	if [ $# -eq 0 ]; then
 		usage
