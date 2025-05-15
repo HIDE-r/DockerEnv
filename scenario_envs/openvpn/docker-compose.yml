@@ -1,0 +1,19 @@
+name: openvpn
+
+services:
+  openvpn:
+    image: scenario_envs/openvpn
+    build: .
+    network_mode: "host"
+    volumes:
+      - ./conf/openvpn_server.conf:/etc/openvpn/server.conf
+      - ./conf/client.ovpn:/etc/openvpn/client.ovpn
+      - ./env_data/:/var/env_data
+      - ./entrypoint.sh:/entrypoint.sh
+    # Note: 需要权限用于生成 /dev/tun
+    privileged: true
+    # Note: 给接口配置地址需要网络管理能力
+    cap_add:
+      - NET_ADMIN
+    command: /entrypoint.sh
+
