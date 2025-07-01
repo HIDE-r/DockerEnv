@@ -1,5 +1,8 @@
 name: dhcpv6-pd
 
+# 如 Ubuntu 发行版, 由于 NetworkManager 使用了 netlink 监听的接口事件, 当接口 down 的时候将其配置写到 sysctl 中, 相同值时会覆盖前面脚本的修改. 
+# 故需要先将 NetworkManager 中的接口 ipv6 功能开启
+
 services:
   radvd:
     image: scenario_envs/ipv6
@@ -32,6 +35,7 @@ services:
       - IFACE=${IFACE}
     volumes:
       - ./conf/dhcpd6.conf:/etc/dhcp/dhcpd6.conf
+      - ./env_data/:/var/env_data
     # Note: 需要权限用于生成 /dev/ppp
     privileged: true
     # Note: 给接口配置地址需要网络管理能力
