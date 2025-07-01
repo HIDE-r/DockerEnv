@@ -1,0 +1,48 @@
+name: dhcpv6-pd
+
+services:
+  radvd:
+    image: scenario_envs/ipv6
+    build: .
+    network_mode: "host"
+    environment:
+      - IFACE=${IFACE}
+    volumes:
+      - ./conf/radvd.conf:/etc/radvd.m4
+    # Note: 需要权限用于生成 /dev/ppp
+    privileged: true
+    # Note: 给接口配置地址需要网络管理能力
+    cap_add:
+      - NET_ADMIN
+    # -C 指定配置文件
+    command: >
+      sh -c "
+        ip link set dev $${IFACE} up &&
+        m4 -D__IFACE__=$${IFACE} /etc/radvd.m4 > /etc/radvd-$${IFACE}.conf &&
+        radvd -n -C /etc/radvd-$${IFACE}.conf
+      "
+
+  dhcpd6:
+    image: scenario_envs/ipv6
+    build: .
+    network_mode: "host"
+    environment:
+      - IFACE=${IFACE}
+    volumes:
+      - ./conf/dhcpd6.conf:/etc/dhcp/dhcpd6.conf
+    # Note: 需要权限用于生成 /dev/ppp
+    privileged: true
+    # Note: 给接口配置地址需要网络管理能力
+    cap_add:
+      - NET_ADMIN
+    # -6 表示启用ipv6
+    # -cf 指定配置文件
+    command: >
+      sh -c "
+        ip link set dev $${IFACE} up &&
+        ip -6 addr flush dev $${IFACE} &&
+        ip -6 addr add 2024::1/48 dev $${IFACE} &&
+        mkdir -p /var/env_data &&
+        touch /var/env_data/dhcpd6.leases &&
+        dhcpd -6 -cf /etc/dhcp/dhcpd6.conf $${IFACE}
+      "
