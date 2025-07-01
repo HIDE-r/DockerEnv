@@ -1,3 +1,5 @@
+name: pppoev4
+
 services:
   pppoev4:
     image: scenario_envs/pppoev4

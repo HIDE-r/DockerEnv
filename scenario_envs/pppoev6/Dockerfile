@@ -1,6 +1,5 @@
 FROM ubuntu:24.04
 LABEL author="liaokangning <lkangn.collin@gmail.com>"
-LABEL describe="ipv6 test env"
 
 # 设置时区
 ENV TZ=Asia/Shanghai
