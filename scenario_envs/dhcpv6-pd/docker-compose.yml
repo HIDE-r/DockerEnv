@@ -43,6 +43,7 @@ services:
       - NET_ADMIN
     # -6 表示启用ipv6
     # -cf 指定配置文件
+    # -f 前台运行, 防止容器直接退出
     command: >
       sh -c "
         sysctl -w net.ipv6.conf.$${IFACE}.disable_ipv6=0 &&
@@ -52,5 +53,5 @@ services:
         ip -6 addr add 2024::1/48 dev $${IFACE} &&
         mkdir -p /var/env_data &&
         touch /var/env_data/dhcpd6.leases &&
-        dhcpd -6 -cf /etc/dhcp/dhcpd6.conf $${IFACE}
+        dhcpd -6 -f -cf /etc/dhcp/dhcpd6.conf $${IFACE}
       "
