@@ -6,13 +6,12 @@ services:
   dhcpd:
     image: scenario_envs/dhcpd
     build: .
-    user: ${CTR_UID}
     network_mode: "host"
     environment:
       - IFACE=${IFACE}
     volumes:
       - ./conf/dhcpd.conf:/etc/dhcp/dhcpd.conf
-      - ./data/:/var/data/dhcp
+      - ./data/:/var/data/
     # NOTE: 需要权限用于生成 /dev/ppp
     privileged: true
     # NOTE: 给接口配置地址需要网络管理能力
@@ -22,7 +21,8 @@ services:
     # -f 前台运行, 防止容器直接退出
     command: >
       sh -c "
-        mkdir -p /tmp/data/&&
-        touch /tmp/data/dhcpd.leases &&
-        dhcpd -f -cf /etc/dhcp/dhcpd.conf -lf /tmp/data/dhcpd.leases $${IFACE}
+        ip addr add 192.168.77.1/24 dev ${IFACE} &&
+        mkdir -p /var/data/ &&
+        touch /var/data/dhcpd.leases &&
+        dhcpd -f -cf /etc/dhcp/dhcpd.conf -lf /var/data/dhcpd.leases $${IFACE}
       "
