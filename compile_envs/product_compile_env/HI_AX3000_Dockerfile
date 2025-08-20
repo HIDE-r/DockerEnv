@@ -1,0 +1,69 @@
+FROM ubuntu:24.04
+LABEL author="liaokangning <lkangn.collin@gmail.com>"
+LABEL describe="use for build UGW project"
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# sh 修改为 bash, 默认为 dash
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# 增加 32 位支持
+RUN dpkg --add-architecture i386
+
+# 修改下载源
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources; \
+	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources;
+
+RUN apt-get update && apt-get install ca-certificates --reinstall -y
+
+# 使用 HTTPS 可以有效避免国内运营商的缓存劫持
+RUN sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
+
+# 安装相关编译环境软件
+RUN apt-get update && apt-get install -y \
+	sudo \
+	iproute2 \
+	iputils-ping \
+	wget \
+	git \
+	make \
+	gawk \
+	flex \
+	curl \
+	autoconf \
+	gcc \
+	g++ \
+	bzip2 \
+	bison \
+	tclsh \
+	sqlite3 \
+	rsync \
+	bc \
+	xz-utils \
+	pkg-config \
+	libstdc++6 \
+	lib32stdc++6 \
+	libncurses-dev \
+	libssl-dev \
+	python3 \
+	python-is-python3 \
+	device-tree-compiler \
+	vim \
+	bear \
+	jq \
+	subversion \
+	cmake \
+	libgmp-dev \
+	libmpc-dev \
+	zlib1g:i386
+
+# 移除编译时 svn 提示
+RUN echo "store-plaintext-passwords = yes" >> /etc/subversion/servers
+
+WORKDIR /
+
+RUN git clone https://github.com/dvidelabs/flatcc.git && cd flatcc && scripts/initbuild.sh make && scripts/build.sh && cp ./bin/flatcc /usr/bin/
+
+RUN mkdir /projects && chown ubuntu:ubuntu /projects
