@@ -1,0 +1,18 @@
+name: pptp
+
+services:
+  pptpd:
+    image: scenario_envs/pptpd
+    build: .
+    network_mode: "host"
+    volumes:
+      - ./conf/chap-secrets:/etc/ppp/chap-secrets
+      - ./conf/pppd_option.conf:/etc/ppp/pptpd-options
+      - ./conf/pptpd.conf:/etc/pptpd.conf
+    # NOTE: 需要权限用于生成 /dev/ppp
+    privileged: true
+    # NOTE: 给接口配置地址需要网络管理能力
+    cap_add:
+      - NET_ADMIN
+    # -f 前台运行, 防止容器直接退出
+    command: pptpd -f -d
