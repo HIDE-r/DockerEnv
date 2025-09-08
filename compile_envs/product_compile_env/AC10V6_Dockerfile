@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:18.04
 LABEL author="liaokangning <lkangn.collin@gmail.com>"
 LABEL describe="use for build UGW project"
 
@@ -13,13 +13,13 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN dpkg --add-architecture i386
 
 # 修改下载源
-RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources; \
-	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources;
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list; \
+	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 RUN apt-get update && apt-get install ca-certificates --reinstall -y
 
 # 使用 HTTPS 可以有效避免国内运营商的缓存劫持
-RUN sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
+RUN sed -i 's/http:/https:/g' /etc/apt/sources.list
 
 # 安装相关编译环境软件
 RUN apt-get update && apt-get install -y \
@@ -48,23 +48,17 @@ RUN apt-get update && apt-get install -y \
 	libncurses-dev \
 	libssl-dev \
 	python3 \
-	python-is-python3 \
 	device-tree-compiler \
 	vim \
 	bear \
 	jq \
 	subversion \
 	cmake \
-	libgmp-dev \
-	libmpc-dev \
-	zlib1g:i386 \
-	squashfs-tools
+	zlib1g:i386
 
 # 移除编译时 svn 提示
 RUN echo "store-plaintext-passwords = yes" >> /etc/subversion/servers
 
 WORKDIR /
 
-RUN git clone https://github.com/dvidelabs/flatcc.git && cd flatcc && scripts/initbuild.sh make && scripts/build.sh && cp ./bin/flatcc /usr/bin/
-
-RUN mkdir /projects && chown ubuntu:ubuntu /projects
+RUN useradd -ms /bin/bash ubuntu && mkdir /projects && chown ubuntu:ubuntu /projects
