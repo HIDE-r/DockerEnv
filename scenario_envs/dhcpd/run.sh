@@ -2,4 +2,4 @@
 
 export IFACE="$1"
 
-docker compose up
+docker compose up -d
