@@ -33,6 +33,8 @@ RUN apt-get update && apt-get install -y \
 	flex \
 	curl \
 	autoconf \
+	automake \
+	libtool \
 	gcc \
 	g++ \
 	bzip2 \
