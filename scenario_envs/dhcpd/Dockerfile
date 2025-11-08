@@ -21,4 +21,5 @@ RUN apt-get update && apt-get install -y \
 	isc-dhcp-server \
 	vim \
 	iproute2 \
-	iputils-ping
+	iputils-ping \
+	tcpdump
