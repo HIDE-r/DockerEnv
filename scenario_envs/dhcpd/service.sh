@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
-source param.env
+if [ -f param.env ]; then
+    source param.env
+fi
+
+if [ -z "${IFACE}" ]; then
+    echo "Error: IFACE is not set!"
+    exit 1
+fi
 
 start() {
     docker compose up -d
