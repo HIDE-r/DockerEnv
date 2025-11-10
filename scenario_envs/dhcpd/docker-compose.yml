@@ -9,6 +9,7 @@ networks:
     ipam:
       config:
       - subnet: 192.168.77.0/24
+        gateway: 192.168.77.1
 
 services:
   dhcpd:
@@ -18,9 +19,12 @@ services:
     networks:
       macvlan_dhcp:
         ipv4_address: 192.168.77.2
+    cap_add:
+      - NET_ADMIN
     volumes:
       - ./conf/dhcpd.conf:/etc/dhcp/dhcpd.conf
     # -cf 指定配置文件
+    # -lf 指定租约记录文件
     # -f 前台运行, 防止容器直接退出
     command: >
       sh -c "
