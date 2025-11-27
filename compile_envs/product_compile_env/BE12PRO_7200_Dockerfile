@@ -86,4 +86,6 @@ RUN echo "store-plaintext-passwords = yes" >> /etc/subversion/servers
 
 WORKDIR /
 
+RUN git clone https://github.com/dvidelabs/flatcc.git && cd flatcc && scripts/initbuild.sh make && scripts/build.sh && cp ./bin/flatcc /usr/bin/
+
 RUN mkdir /projects && chown ubuntu:ubuntu /projects

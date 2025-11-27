@@ -1,6 +1,5 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL author="liaokangning <lkangn.collin@gmail.com>"
-LABEL describe="use for build UGW project"
 
 # 设置时区
 ENV TZ=Asia/Shanghai
@@ -13,19 +12,21 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN dpkg --add-architecture i386
 
 # 修改下载源
-RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources; \
-	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources;
+# RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources; \
+# 	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources;
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list; \
+	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list;
 
 RUN apt-get update && apt-get install ca-certificates --reinstall -y
 
 # 使用 HTTPS 可以有效避免国内运营商的缓存劫持
-RUN sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
+RUN sed -i 's/http:/https:/g' /etc/apt/sources.list
 
 # 安装相关编译环境软件
 RUN apt-get update && apt-get install -y \
 	python3 \
 	vim \
-	ubuntu-make make\
+	make\
 	gcc \
 	patch \
 	rsync \
@@ -49,7 +50,10 @@ RUN apt-get update && apt-get install -y \
 	ccache \
 	libmpc-dev \
 	libgmp-dev \
-	libncurses5-dev 
+	libncurses5-dev \
+	gawk \
+	wget \
+	git
 
 # 开发工具
 RUN apt-get install -y \
@@ -64,9 +68,12 @@ RUN pip3 install \
 	prettytable \
 	sh
 
-RUN cd scripts/python && ./install_python_pack.sh
-
-
 WORKDIR /
 
-RUN mkdir /projects && chown ubuntu:ubuntu /projects
+ADD scripts /scripts
+
+RUN cd /scripts/python && ./install_python_pack.sh
+
+RUN rm /usr/bin/sh && ln -s /usr/bin/bash /usr/bin/sh
+
+RUN ln -s /usr/bin/python3.8 /usr/bin/python
