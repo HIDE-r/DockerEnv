@@ -1,10 +1,17 @@
-name: pptp
+name: pptpd
+
+networks:
+  macvlan:
+    driver: macvlan
+    driver_opts:
+      parent: ${IFACE}
 
 services:
   pptpd:
     image: scenario_envs/pptpd
     build: .
-    network_mode: "host"
+    networks:
+      macvlan:
     volumes:
       - ./conf/chap-secrets:/etc/ppp/chap-secrets
       - ./conf/pppd_option.conf:/etc/ppp/pptpd-options
