@@ -1,0 +1,42 @@
+name: wireguard
+
+
+networks:
+  macvlan_wg:
+    driver: macvlan
+    driver_opts:
+      parent: ${IFACE}
+    ipam:
+      config:
+      - subnet: 192.168.77.0/24
+        gateway: 192.168.77.1
+
+services:
+  dhcpd:
+    image: scenario_envs/wireguard
+    build: .
+    # network_mode: "host"
+    networks:
+      macvlan_wg:
+        ipv4_address: 192.168.77.2
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./conf/dhcpd.conf:/etc/dhcp/dhcpd.conf
+    # -cf 指定配置文件
+    # -lf 指定租约记录文件
+    # -f 前台运行, 防止容器直接退出
+    command: >
+      sh -c "
+        touch /var/run/dhcpd.leases &&
+        dhcpd -f -cf /etc/dhcp/dhcpd.conf -lf /var/run/dhcpd.leases eth0
+      "
+
+  wireguard:
+    image: scenario_envs/wireguard
+    build: .
+    networks:
+      macvlan_wg:
+        ipv4_address: 192.168.77.3
+    cap_add:
+      - NET_ADMIN
